@@ -77,9 +77,10 @@ let enhance = async () => {
   ];
 
   let listOfCategoriesToSearch = ["grav-2"]; //what to look in extension to find class
+  // should we add the warning even without the class?? - see questionnaire lens
 
   let isProfessionalAthlete = false;
-  let takingProhibitedDrug = false;
+  let isProhibitedDrug = false;
 
   // Index medications by reference
   const medicationsById = new Map();
@@ -115,7 +116,7 @@ let enhance = async () => {
     WADA_BUNDLE_IDENTIFIER_LIST.includes(epiData.identifier.value)
   ) {
     console.log("🔗 Matched ePI Doping Bundle.identifier:", epiData.identifier.value);
-    takingProhibitedDrug = true;
+    isProhibitedDrug = true;
   }
 
   // Check MedicinalProductDefinition.identifier.value
@@ -126,7 +127,7 @@ let enhance = async () => {
       ids.forEach((id) => {
         if (WADA_LIST.includes(id.value)) {
           console.log("💊 Matched Doping MedicinalProductDefinition.identifier:", id.value);
-          takingProhibitedDrug = true;
+          isProhibitedDrug = true;
         }
       });
     }
@@ -171,7 +172,7 @@ let enhance = async () => {
     // throw new Error("No categories found", categories);
     return htmlData;
   }
-  if (isProfessionalAthlete && takingProhibitedDrug) {
+  if (isProfessionalAthlete && isProhibitedDrug) {
     return await annotateHTMLsection(categories, enhanceTag);
   }
   else {
