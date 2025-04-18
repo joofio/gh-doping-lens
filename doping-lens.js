@@ -8,6 +8,8 @@ let getSpecification = () => {
   return "1.0.0";
 };
 
+//TODO check if medication has the text on it - in PT there is that info, for example - create ePI for it.
+//TODO explore if could add also on top something if not there.
 let annotationProcess = (listOfCategories, enhanceTag, document, response) => {
   listOfCategories.forEach((check) => {
     if (response.includes(check)) {
