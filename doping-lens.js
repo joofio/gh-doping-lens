@@ -84,13 +84,6 @@ let enhance = async () => {
   let isProfessionalAthlete = false;
   let isProhibitedDrug = false;
 
-  // Index medications by reference
-  const medicationsById = new Map();
-  ipsData.entry.forEach((entry) => {
-    if (entry.resource?.resourceType === "Medication" && entry.resource.id) {
-      medicationsById.set(`Medication/${entry.resource.id}`, entry.resource);
-    }
-  });
 
   for (const entry of ipsData.entry) {
     const res = entry.resource;
