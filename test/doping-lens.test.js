@@ -7,6 +7,7 @@ const { JSDOM } = require("jsdom");
 global.html = fs.readFileSync(path.join(__dirname, "../data/html.html"), "utf-8");
 global.epi = JSON.parse(fs.readFileSync(path.join(__dirname, "../data/epi.json")));
 global.ips = JSON.parse(fs.readFileSync(path.join(__dirname, "../data/ips.json")));
+global.pv = JSON.parse(fs.readFileSync(path.join(__dirname, "../data/pv.json")));
 
 // Set up DOM globally so the script can use it
 const dom = new JSDOM(global.html);
@@ -24,7 +25,7 @@ beforeAll(() => {
     html: global.html,
     epi: global.epi,
     ips: global.ips,
-    pv: {}, // optional
+    pv: global.pv,
     require,
     module: {},
     exports: {},

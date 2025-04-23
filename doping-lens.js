@@ -67,7 +67,7 @@ let enhance = async () => {
   }
   if (!epiData || !epiData.entry || epiData.entry.length === 0) {
     throw new Error("ePI is empty or invalid.");
-}
+  }
   let enhanceTag = "highlight";
   // Match lists
   const WADA_BUNDLE_IDENTIFIER_LIST = ["epibundle-123", "epibundle-abc"];
@@ -96,13 +96,47 @@ let enhance = async () => {
         if (
           ext.url === "http://hl7.org/fhir/StructureDefinition/individual-occupation" &&
           ext.valueCodeableConcept.coding[0].code == "3421" //Athletes and sports players"
+          && ext.valueCodeableConcept.coding[0].system == "http://www.ilo.org/public/english/bureau/stat/isco"
         ) {
           isProfessionalAthlete = true;
           console.log("🏃‍♂️ Athlete status: professional");
         }
       }
     }
-  }
+  };
+
+  // search persona vector to look it up as well
+  pv.entry.forEach((entry) => {
+    const resource = entry.resource;
+
+    if (resource.resourceType === "Observation") {
+      // Check if category contains the social-history code
+      const hasSocialHistoryCategory = resource.category?.some(cat =>
+        cat.coding?.some(coding =>
+          coding.system === "http://terminology.hl7.org/CodeSystem/observation-category" &&
+          coding.code === "social-history"
+        )
+      );
+
+      // Check if code is 11341-5 (History of Occupation)
+      const hasOccupationCode = resource.code?.coding?.some(coding =>
+        coding.system === "http://loinc.org" &&
+        coding.code === "11341-5"
+      );
+
+      // Check if valueCodeableConcept indicates athlete
+      const hasAthleteValue = resource.valueCodeableConcept?.coding?.some(coding =>
+        coding.system === "http://www.ilo.org/public/english/bureau/stat/isco" &&
+        coding.code === "3421"
+      );
+
+      if (hasSocialHistoryCategory && hasOccupationCode && hasAthleteValue) {
+        isProfessionalAthlete = true;
+        console.log("Athlete status detected from Observation from persona vector:", resource.id);
+      }
+    }
+  });
+
 
   // 2. Check medications for doping substances
   // Check bundle.identifier.value
