@@ -105,8 +105,41 @@ let enhance = async () => {
     }
   };
 
+  //search IPS to look it up as well
+  ips.entry.forEach((entry) => {
+    const resource = entry.resource;
+
+    if (resource.resourceType === "Observation") {
+      // Check if category contains the social-history code
+      const hasSocialHistoryCategory = resource.category?.some(cat =>
+        cat.coding?.some(coding =>
+          coding.system === "http://terminology.hl7.org/CodeSystem/observation-category" &&
+          coding.code === "social-history"
+        )
+      );
+
+      // Check if code is 11341-5 (History of Occupation)
+      const hasOccupationCode = resource.code?.coding?.some(coding =>
+        coding.system === "http://loinc.org" &&
+        coding.code === "11341-5"
+      );
+
+      // Check if valueCodeableConcept indicates athlete
+      const hasAthleteValue = resource.valueCodeableConcept?.coding?.some(coding =>
+        coding.system === "http://www.ilo.org/public/english/bureau/stat/isco" &&
+        coding.code === "3421"
+      );
+
+      if (hasSocialHistoryCategory && hasOccupationCode && hasAthleteValue) {
+        isProfessionalAthlete = true;
+        console.log("Athlete status detected from Observation from persona vector:", resource.id);
+      }
+    }
+  });
+
   // search persona vector to look it up as well
-  pv.entry.forEach((entry) => {
+  const pvEntries = Array.isArray(pv?.entry) ? pv.entry : [];
+  pvEntries.forEach((entry) => {
     const resource = entry.resource;
 
     if (resource.resourceType === "Observation") {
